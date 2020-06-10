@@ -25,6 +25,10 @@ Fill out the secret.json file in the root with an object that looks like:
 }
 ```
 
+## On Screen Follow Alert
+
+There is an on-screen follower alert that you can edit in the src/follow-alert directory. Modify the CSS to get the look that you want for your stream.
+
 ## Adding Commands 
 
 - Create a file with your command in the commands directory that has a command class implementing the Command interface

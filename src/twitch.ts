@@ -17,13 +17,15 @@ import { ShoutoutCommand } from './commands/so';
 import { Config } from './models/config';
 import { readFileOrCreate } from './helpers/filesystem';
 import { cwd } from 'process';
+import { Command } from './commands/command';
+import { BrowserWindow } from 'electron';
 
 const config: Config = JSON.parse(readFileOrCreate(path.join(cwd(), 'secret.json')));
 const client = tmi.client(config.tmiConfig);
 client.on('message', onMessageHandler);
 client.connect();
 
-const commands = {
+const commands: Record<string, Command> = {
     '!commands': new CommandsCommand(),
     '!project': new ProjectCommand(),
     '!discord': new DiscordCommand(),
@@ -46,11 +48,12 @@ const commands = {
     '!so': new ShoutoutCommand()
 }
 
-export function followAlert(name: string) {
+export function followAlert(name: string, win: BrowserWindow) {
     client.say(`#${config.channel}`, `${name} has followed`);
+    win.webContents.send('message', name);
 }
 
-function onMessageHandler(channel, tags, message, self) {
+function onMessageHandler(channel: string, user: tmi.ChatUserstate, message: string, self: boolean) {
     if (self || message.split('')[0] !== '!') return;
 
     const commandName = message.split(' ')[0];
@@ -58,7 +61,7 @@ function onMessageHandler(channel, tags, message, self) {
         command: message,
         client: client,
         channel: channel,
-        tags: tags,
+        tags: user,
         config: config
     });
 }

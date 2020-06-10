@@ -2,7 +2,6 @@ import axios from 'axios';
 import { Config } from './models/config';
 
 export class TwitchAPI {
-    token: string;
     config: Config;
 
     constructor(config: Config) {
