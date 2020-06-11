@@ -19,6 +19,8 @@ import { readFileOrCreate } from './helpers/filesystem';
 import { cwd } from 'process';
 import { Command } from './commands/command';
 import { BrowserWindow } from 'electron';
+import { GitHubCommand } from './commands/github';
+import { BlogCommand } from './commands/blog';
 
 const config: Config = JSON.parse(readFileOrCreate(path.join(cwd(), 'secret.json')));
 const client = tmi.client(config.tmiConfig);
@@ -45,7 +47,9 @@ const commands: Record<string, Command> = {
     '!website': new WebsiteCommand(),
     '!join': new JoinCommand(),
     '!play': new PlayCommand(),
-    '!so': new ShoutoutCommand()
+    '!so': new ShoutoutCommand(),
+    '!github': new GitHubCommand(),
+    '!blog': new BlogCommand()
 }
 
 export function followAlert(name: string, win: BrowserWindow) {
