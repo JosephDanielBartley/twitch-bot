@@ -7,9 +7,9 @@ export class DiceCommand implements Command {
         this.sides = sides;
     }
 
-    execute(args: { client: any, channel: string, tags: any }): void {
+    execute(args: { client: any, channel: string, user: any }): void {
         const num = this.rollDice();
-        args.client.say(args.channel, `${args.tags['display-name']} rolled a d${this.sides} for a result of ${num}`);
+        args.client.say(args.channel, `${args.user['display-name']} rolled a d${this.sides} for a result of ${num}`);
     }
 
     private rollDice() {

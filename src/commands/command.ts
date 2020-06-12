@@ -5,7 +5,7 @@ export interface Command {
         command?: string,
         client?: any,
         channel?: string,
-        tags?: any,
+        user?: any,
         config?: Config
     }): void;
 }

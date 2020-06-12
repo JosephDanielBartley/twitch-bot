@@ -7,14 +7,14 @@ import { readFileOrCreate, writeFile } from '../helpers/filesystem';
 export class JoinCommand implements Command {
     filePath = path.join(cwd(), 'data/players.json');
 
-    execute(args: {tags: any}) {
+    execute(args: {user: any}) {
         let players: string[] = JSON.parse(readFileOrCreate(this.filePath));
         if (!players) {
             players = [];
-            this.addPlayer(players, args.tags['display-name']);
+            this.addPlayer(players, args.user['display-name']);
         }
-        else if (!players.includes(args.tags['display-name'])) {
-            this.addPlayer(players, args.tags['display-name']);
+        else if (!players.includes(args.user['display-name'])) {
+            this.addPlayer(players, args.user['display-name']);
         }
     }
 

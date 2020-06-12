@@ -8,8 +8,8 @@ import { readFileOrCreate, writeFile } from '../helpers/filesystem';
 export class PlayCommand implements Command {
     filePath = path.join(cwd(), 'data/players.json');
 
-    execute(args: {client: any, channel: string, tags: any, config: Config}) {
-        if (args.tags['display-name'] === args.config.channel) {
+    execute(args: {client: any, channel: string, user: any, config: Config}) {
+        if (args.user['display-name'] === args.config.channel) {
             const players: string[] = JSON.parse(readFileOrCreate(this.filePath));
             if (players.length === 0) {
                 args.client.say(args.channel, 'There are no players');

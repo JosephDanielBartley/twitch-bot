@@ -15,17 +15,21 @@ import { TwitterCommand } from './commands/twitter';
 import { WebsiteCommand } from './commands/website';
 import { ShoutoutCommand } from './commands/so';
 import { Config } from './models/config';
-import { readFileOrCreate } from './helpers/filesystem';
+import { readFileOrCreate, writeFile } from './helpers/filesystem';
 import { cwd } from 'process';
 import { Command } from './commands/command';
 import { BrowserWindow } from 'electron';
 import { GitHubCommand } from './commands/github';
 import { BlogCommand } from './commands/blog';
+import { MoveCommand } from './commands/move';
+import { BallCommand } from './commands/ball';
 
 const config: Config = JSON.parse(readFileOrCreate(path.join(cwd(), 'secret.json')));
 const client = tmi.client(config.tmiConfig);
 client.on('message', onMessageHandler);
 client.connect();
+
+const scoresPath = path.join(cwd(), 'data/scores.json');
 
 const commands: Record<string, Command> = {
     '!commands': new CommandsCommand(),
@@ -49,12 +53,38 @@ const commands: Record<string, Command> = {
     '!play': new PlayCommand(),
     '!so': new ShoutoutCommand(),
     '!github': new GitHubCommand(),
-    '!blog': new BlogCommand()
+    '!blog': new BlogCommand(),
+    '!move': new MoveCommand(),
+    '!ball': new BallCommand()
 }
 
 export function followAlert(name: string, win: BrowserWindow) {
     client.say(`#${config.channel}`, `${name} has followed`);
     win.webContents.send('message', name);
+}
+
+export function winnerAlert(name: string, win: BrowserWindow) {
+    
+    let scores: { name: string, score: number }[] = JSON.parse(readFileOrCreate(scoresPath));
+    
+    if (!scores) {
+        scores = [];
+    }
+    
+    let playerScore;
+    const scoreIndex = scores.findIndex(s => s.name === name);
+    if (scoreIndex !== -1) {
+        const score = scores[scoreIndex];
+        score.score++;
+        playerScore = score.score;
+    } else {
+        playerScore = 1;
+        scores.push({name: name, score: 1});
+    }
+    
+    writeFile(scoresPath, JSON.stringify(scores, null, '\t'));
+    win.webContents.send('update', {name: name, score: playerScore});
+    client.say(`#${config.channel}`, `${name} has scored a point and now has ${playerScore} points`);
 }
 
 function onMessageHandler(channel: string, user: tmi.ChatUserstate, message: string, self: boolean) {
@@ -65,7 +95,7 @@ function onMessageHandler(channel: string, user: tmi.ChatUserstate, message: str
         command: message,
         client: client,
         channel: channel,
-        tags: user,
+        user: user,
         config: config
     });
 }
