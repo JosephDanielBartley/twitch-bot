@@ -82,11 +82,14 @@ function createLeaderboardWindow() {
     return win;
 }
 
+app.disableHardwareAcceleration();
 app.whenReady().then(() => {
-    const win = createFollowerAlertWindow();
-    gameWindow = createGameWindow();
-
-    leaderboardWindow = createLeaderboardWindow();
-    startServer(win);
-    twitchAPI.subscribeToFollows();
+    setTimeout(() => {
+        const win = createFollowerAlertWindow();
+        gameWindow = createGameWindow();
+    
+        leaderboardWindow = createLeaderboardWindow();
+        startServer(win);
+        twitchAPI.subscribeToFollows();
+    }, 500);
 });
